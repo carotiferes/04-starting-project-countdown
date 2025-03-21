@@ -7,9 +7,11 @@ export default function TimerChallenge({title, targetTime}) {
   const [timerExpired, setTimerExpired] = useState(false);
 
   // let timer; if i do this, the variable resets every time the component is re-executed
+  const timer = useRef(); // component instance specific and it will not be reset when the component reexecutes
+  // no direct impact in the UI
 
   function handleStart() {
-    timer = setTimeout(() => {
+    timer.current = setTimeout(() => {
       setTimerExpired(true)
     }, targetTime * 1000);
 
@@ -17,7 +19,7 @@ export default function TimerChallenge({title, targetTime}) {
   }
 
   function handleStop(params) {
-    clearTimeout(timer);
+    clearTimeout(timer.current);
   }
 
   return (
