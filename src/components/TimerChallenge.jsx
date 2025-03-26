@@ -1,18 +1,22 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import ResultModal from "./ResultModal";
 
 // let timer; if i do this, it will not update because it's shared across all instances of the component
 
 export default function TimerChallenge({title, targetTime}) {
-  const [timerStarted, setTimerStarted] = useState(false);
-  const [timerExpired, setTimerExpired] = useState(false);
-
+  const dialog = useRef();
   // let timer; if i do this, the variable resets every time the component is re-executed
   const timer = useRef(); // component instance specific and it will not be reset when the component reexecutes
   // no direct impact in the UI
 
+  const [timerStarted, setTimerStarted] = useState(false);
+  const [timerExpired, setTimerExpired] = useState(false);
+
   function handleStart() {
     timer.current = setTimeout(() => {
-      setTimerExpired(true)
+      setTimerExpired(true);
+      //dialog.current.showModal(); // standard browser feature
+      dialog.current.open(); // declared in useImperativeHandle
     }, targetTime * 1000);
 
     setTimerStarted(true);
@@ -22,7 +26,8 @@ export default function TimerChallenge({title, targetTime}) {
     clearTimeout(timer.current);
   }
 
-  return (
+  return (<>
+    <ResultModal ref={dialog} targetTime={targetTime} result="lost" />
 		<section className="challenge">
 			<h2>{title}</h2>
 			{timerExpired && <p>You lost!</p>}
@@ -36,5 +41,5 @@ export default function TimerChallenge({title, targetTime}) {
 			</p>
 			<p>{timerStarted ? "Time is running..." : "Timer inactive"}</p>
 		</section>
-	);
+	</>);
 }
